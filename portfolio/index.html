@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Sourcebound Evidence Lab: a portfolio case study in citation-grounded AI research.">
+    <title>Sourcebound / Evidence Lab</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#trace">Skip to the research trace</a>
+
+    <header class="site-header shell">
+      <a class="wordmark" href="#top" aria-label="Sourcebound Evidence Lab home">
+        <span class="wordmark-mark" aria-hidden="true">SB</span>
+        <span>sourcebound<span class="wordmark-slash">/</span>lab</span>
+      </a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="#method">Method</a>
+        <a href="#trace">Trace</a>
+        <a href="#release">Release</a>
+      </nav>
+      <div class="header-status"><span class="status-dot" aria-hidden="true"></span> deterministic demo</div>
+    </header>
+
+    <main>
+      <section class="hero shell" id="top">
+        <div class="hero-copy">
+          <p class="eyebrow">Case study <span>/</span> evidence lab</p>
+          <h1>Research that<br><em>leaves a trail.</em></h1>
+          <p class="hero-lede">
+            Sourcebound turns an open question into a reviewable evidence chain:
+            planned queries, independent providers, source passages, claims, and
+            a verification report that shows its working.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#trace">Open the trace <span aria-hidden="true">↘</span></a>
+            <a class="button button-quiet" href="#method">Read the method</a>
+          </div>
+        </div>
+
+        <div class="hero-figure" aria-label="Six-stage research trace diagram">
+          <div class="figure-topline">
+            <span>RUN / PORTFOLIO-DEMO-001</span>
+            <span>06 stages</span>
+          </div>
+          <ol class="signal-map">
+            <li><span class="map-index">01</span><span>question</span><i aria-hidden="true"></i></li>
+            <li><span class="map-index">02</span><span>queries</span><i aria-hidden="true"></i></li>
+            <li><span class="map-index">03</span><span>providers</span><i aria-hidden="true"></i></li>
+            <li><span class="map-index">04</span><span>evidence</span><i aria-hidden="true"></i></li>
+            <li><span class="map-index">05</span><span>claims</span><i aria-hidden="true"></i></li>
+            <li><span class="map-index">06</span><span>verification</span><i aria-hidden="true"></i></li>
+          </ol>
+          <div class="figure-callout">
+            <span class="callout-line" aria-hidden="true"></span>
+            <p>Every conclusion<br><strong>has a source.</strong></p>
+          </div>
+          <div class="figure-footline">
+            <span>tool-first / structured output</span>
+            <span>reproducible fixture</span>
+          </div>
+        </div>
+
+        <div class="hero-note">
+          <span class="note-index">↳</span>
+          <p>Built as a production-shaped Python agent, then made inspectable enough for a hiring panel to trust.</p>
+        </div>
+      </section>
+
+      <section class="method-section shell" id="method">
+        <div class="section-label">Why it exists</div>
+        <div class="method-grid">
+          <h2>Answers are cheap.<br><em>Evidence is the product.</em></h2>
+          <div class="method-copy">
+            <p>
+              Most research demos stop at a fluent paragraph. Sourcebound stops
+              at the paragraph only after it can show which sources arrived,
+              what each source said, and where confidence should stay modest.
+            </p>
+            <div class="principle-grid">
+              <article class="principle">
+                <h3>Plan before prose</h3>
+                <p>Question decomposition, query caps, freshness signals, and an explicit stop decision bound retrieval.</p>
+              </article>
+              <article class="principle">
+                <h3>Keep source ownership</h3>
+                <p>The application owns URLs, IDs, snippets, offsets, and provider health. The model owns synthesis.</p>
+              </article>
+              <article class="principle">
+                <h3>Verify the claims</h3>
+                <p>A deterministic lexical pass exposes matched passages, unresolved citations, and support gaps.</p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="trace-section" id="trace" aria-labelledby="trace-title">
+        <div class="trace-intro shell">
+          <div>
+            <p class="eyebrow">Interactive case study <span>/</span> deterministic sample</p>
+            <h2 id="trace-title">Follow a question<br><em>through the evidence lab.</em></h2>
+          </div>
+          <p class="trace-intro-copy">
+            Move through the same checkpoints an evaluator would inspect. The
+            viewer is intentionally transparent: a partial result is visible,
+            a source can be opened, and lexical verification is labeled as a
+            review aid rather than semantic truth.
+          </p>
+        </div>
+
+        <div class="trace-viewer shell" id="trace-viewer" data-state="loading" aria-busy="true">
+          <aside class="trace-sidebar">
+            <div class="trace-sidebar-top">
+              <span>TRACE INDEX</span>
+              <span id="trace-progress">-- / --</span>
+            </div>
+            <nav class="trace-nav" id="trace-nav" aria-label="Research trace stages">
+              <button class="trace-step is-current" type="button" data-step="0" aria-current="step">
+                <span class="step-number">01</span><span>Question</span><span class="step-dot" aria-hidden="true"></span>
+              </button>
+              <button class="trace-step" type="button" data-step="1">
+                <span class="step-number">02</span><span>Planned queries</span><span class="step-dot" aria-hidden="true"></span>
+              </button>
+              <button class="trace-step" type="button" data-step="2">
+                <span class="step-number">03</span><span>Providers</span><span class="step-dot" aria-hidden="true"></span>
+              </button>
+              <button class="trace-step" type="button" data-step="3">
+                <span class="step-number">04</span><span>Evidence</span><span class="step-dot" aria-hidden="true"></span>
+              </button>
+              <button class="trace-step" type="button" data-step="4">
+                <span class="step-number">05</span><span>Claims</span><span class="step-dot" aria-hidden="true"></span>
+              </button>
+              <button class="trace-step" type="button" data-step="5">
+                <span class="step-number">06</span><span>Verification</span><span class="step-dot" aria-hidden="true"></span>
+              </button>
+            </nav>
+            <div class="trace-sidebar-bottom">
+              <span class="status-dot" aria-hidden="true"></span>
+              <span>offline fixture / safe to replay</span>
+            </div>
+          </aside>
+
+          <div class="trace-main">
+            <div class="trace-main-top">
+              <div>
+                <span class="trace-kicker">RESEARCH RUN</span>
+                <strong id="trace-run">loading sample...</strong>
+              </div>
+              <div class="trace-status-wrap">
+                <span class="trace-kicker">STATUS</span>
+                <strong id="trace-status" aria-live="polite">loading</strong>
+              </div>
+            </div>
+            <div class="trace-meter" aria-hidden="true"><span id="trace-meter-fill"></span></div>
+            <div class="trace-stage" id="trace-stage" role="region" aria-live="polite" aria-label="Research trace detail">
+              <div class="viewer-state viewer-loading">
+                <span class="loading-orbit" aria-hidden="true"></span>
+                <p><strong>Loading the evidence chain.</strong><br>Reading the deterministic sample report...</p>
+              </div>
+            </div>
+            <div class="trace-controls">
+              <button class="control-button" id="trace-prev" type="button" disabled><span aria-hidden="true">←</span> Previous</button>
+              <button class="control-button control-next" id="trace-next" type="button" disabled>Next stage <span aria-hidden="true">→</span></button>
+              <button class="control-button control-retry is-hidden" id="trace-retry" type="button">Retry fixture</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="release-section shell" id="release">
+        <div class="release-top">
+          <div>
+            <p class="eyebrow">Release notes</p>
+            <h2>Small surface.<br><em>Serious contracts.</em></h2>
+          </div>
+          <p>
+            The portfolio layer is deliberately thin: a static viewer for GitHub
+            Pages, an optional FastAPI adapter for a real endpoint, CI that tests
+            and builds the package, and a truthful Docker image for the web slice.
+          </p>
+        </div>
+        <div class="release-grid">
+          <div class="release-stat"><strong>4</strong><span>provider perspectives</span></div>
+          <div class="release-stat"><strong>3</strong><span>planned retrieval intents</span></div>
+          <div class="release-stat"><strong>0.86</strong><span>retrieval coverage</span></div>
+          <div class="release-stat"><strong>1.0</strong><span>citation grounding</span></div>
+        </div>
+        <div class="release-footer">
+          <p><span class="status-dot" aria-hidden="true"></span> Ready for review / sample is deterministic</p>
+          <a class="button button-primary" href="#top">Back to top <span aria-hidden="true">↗</span></a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer shell">
+      <span>sourcebound / evidence lab</span>
+      <span>tool calling · provenance · evaluation</span>
+      <span>© 2026</span>
+    </footer>
+  </body>
+</html>

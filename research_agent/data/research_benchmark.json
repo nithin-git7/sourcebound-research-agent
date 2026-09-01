@@ -1,0 +1,60 @@
+{
+  "benchmark_id": "sourcebound-rag-fixtures-v1",
+  "version": "1.0.0",
+  "name": "Sourcebound RAG fixture benchmark",
+  "mode": "fixture",
+  "metric_disclosure": "Fixture-mode metrics are deterministic proxy metrics over the curated offline corpus; they are not live-web quality measurements or a substitute for human review.",
+  "cases": [
+    {
+      "name": "rag-benefits",
+      "question": "What are the benefits of retrieval-augmented generation?",
+      "category": "benefits",
+      "minimum_score": 0.8,
+      "minimum_providers": 2,
+      "expected_concepts": [
+        {"id": "external-evidence", "label": "external evidence or corpus", "terms": ["external evidence", "external corpus", "external knowledge"]},
+        {"id": "freshness", "label": "freshness or updateability", "terms": ["freshness", "newer", "updatable", "updateability"]},
+        {"id": "domain-adaptation", "label": "domain adaptation", "terms": ["domain adaptation", "domain-specific"]}
+      ],
+      "criteria": [
+        {"id": "retrieval-coverage", "description": "At least three quarters of expected benefit concepts appear in retrieved evidence.", "metric": "retrieval_recall", "minimum": 0.75},
+        {"id": "answer-completeness", "description": "The synthesized answer covers at least three quarters of expected benefit concepts.", "metric": "completeness", "minimum": 0.75},
+        {"id": "claim-support", "description": "Most generated findings have lexical overlap with their cited evidence.", "metric": "claim_support", "minimum": 0.5}
+      ]
+    },
+    {
+      "name": "rag-production-tradeoffs",
+      "question": "What are the production trade-offs of retrieval-augmented generation?",
+      "category": "tradeoffs",
+      "minimum_score": 0.8,
+      "minimum_providers": 2,
+      "expected_concepts": [
+        {"id": "retrieval-quality", "label": "retrieval quality", "terms": ["retrieval quality", "retriever behavior", "weak ranker"]},
+        {"id": "latency", "label": "latency", "terms": ["latency"]},
+        {"id": "corpus-maintenance", "label": "corpus coverage or stale context", "terms": ["corpus coverage", "corpus maintenance", "stale context", "stale index"]}
+      ],
+      "criteria": [
+        {"id": "retrieval-coverage", "description": "Production retrieval risks should be present in the evidence set.", "metric": "retrieval_recall", "minimum": 0.75},
+        {"id": "answer-completeness", "description": "The answer should mention the main operational trade-offs.", "metric": "completeness", "minimum": 0.75},
+        {"id": "claim-support", "description": "Most generated trade-off findings should overlap their cited evidence.", "metric": "claim_support", "minimum": 0.5}
+      ]
+    },
+    {
+      "name": "rag-grounding",
+      "question": "How does retrieval-augmented generation ground model answers?",
+      "category": "grounding",
+      "minimum_score": 0.8,
+      "minimum_providers": 2,
+      "expected_concepts": [
+        {"id": "task-relevant-evidence", "label": "task-relevant retrieved evidence", "terms": ["task-relevant evidence", "retrieved", "external evidence"]},
+        {"id": "non-parametric-memory", "label": "external or non-parametric memory", "terms": ["non-parametric memory", "external corpus", "knowledge base"]},
+        {"id": "faithfulness", "label": "answer faithfulness", "terms": ["answer faithfulness", "grounded generation", "ground model"]}
+      ],
+      "criteria": [
+        {"id": "retrieval-coverage", "description": "The evidence set should contain concepts describing retrieval-based grounding.", "metric": "retrieval_recall", "minimum": 0.75},
+        {"id": "answer-completeness", "description": "The answer should explain how external evidence grounds generation.", "metric": "completeness", "minimum": 0.75},
+        {"id": "claim-support", "description": "Generated grounding findings should overlap their cited evidence.", "metric": "claim_support", "minimum": 0.5}
+      ]
+    }
+  ]
+}

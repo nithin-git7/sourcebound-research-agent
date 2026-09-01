@@ -1,0 +1,46 @@
+[
+  {
+    "id": "fixture-academic-rag",
+    "provider": "fixture_academic",
+    "kind": "academic",
+    "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+    "url": "https://arxiv.org/abs/2005.11401",
+    "snippet": "The RAG paper describes combining a parametric generator with a non-parametric memory retrieved from an external corpus. Retrieval supplies task-relevant evidence without requiring all knowledge to be stored in model parameters.",
+    "published_at": "2020",
+    "authors": ["Patrick Lewis", "Ethan Perez", "Aleksandara Piktus"],
+    "credibility": "high"
+  },
+  {
+    "id": "fixture-engineering-rag",
+    "provider": "fixture_engineering",
+    "kind": "engineering",
+    "title": "Production RAG: Retrieval Quality Is Part of Answer Quality",
+    "url": "https://example.com/sourcebound/production-rag",
+    "snippet": "Production RAG systems introduce retrieval, ranking, indexing, latency, and monitoring concerns. Stale or irrelevant context can degrade an answer even when the language model is capable.",
+    "published_at": "2024",
+    "authors": ["Sourcebound Engineering Notes"],
+    "credibility": "medium"
+  },
+  {
+    "id": "fixture-survey-rag",
+    "provider": "fixture_survey",
+    "kind": "survey",
+    "title": "A Practical Survey of Retrieval-Augmented Generation",
+    "url": "https://example.com/sourcebound/rag-survey",
+    "snippet": "Survey literature positions RAG between static model knowledge and external evidence. It can improve freshness and domain adaptation, but adds a dependency on corpus coverage and retriever behavior.",
+    "published_at": "2024",
+    "authors": ["Sourcebound Research Group"],
+    "credibility": "medium"
+  },
+  {
+    "id": "fixture-evaluation-rag",
+    "provider": "fixture_evaluation",
+    "kind": "evaluation",
+    "title": "Evaluating Grounded Generation with Retrieval",
+    "url": "https://example.com/sourcebound/evaluating-grounded-generation",
+    "snippet": "Evaluation for retrieval-grounded generation should inspect both retrieval quality and answer faithfulness. End-to-end accuracy alone can hide failures caused by missing or misleading context.",
+    "published_at": "2025",
+    "authors": ["Sourcebound Evaluation Notes"],
+    "credibility": "medium"
+  }
+]

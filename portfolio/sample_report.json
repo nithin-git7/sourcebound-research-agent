@@ -1,0 +1,333 @@
+{
+  "run_id": "portfolio-demo-001",
+  "question": "What are the trade-offs of retrieval-augmented generation?",
+  "executive_summary": "Retrieval-augmented generation can make answers more current and domain-aware by bringing external evidence into the generation step. That capability adds a second quality surface: ranking, latency, corpus maintenance, and citation review become part of answer quality.",
+  "key_findings": [
+    {
+      "finding_id": "f1",
+      "statement": "Retrieval-augmented generation supplies external evidence at answer time, improving freshness without retraining the base model.",
+      "importance": "high",
+      "confidence": 0.92,
+      "citation_ids": [
+        "src-academic-rag",
+        "src-survey-rag"
+      ]
+    },
+    {
+      "finding_id": "f2",
+      "statement": "The retrieval layer adds ranking, latency, and corpus-maintenance failure modes that must be evaluated separately from model quality.",
+      "importance": "high",
+      "confidence": 0.88,
+      "citation_ids": [
+        "src-production-rag",
+        "src-evaluation-rag"
+      ]
+    }
+  ],
+  "comparison": [
+    {
+      "dimension": "Freshness versus system complexity",
+      "consensus": "The sources agree that retrieval can extend a model with external knowledge, while the added retrieval layer creates operational dependencies.",
+      "disagreements": [
+        "The academic source foregrounds knowledge access; the engineering source foregrounds latency, ranking, and maintenance."
+      ],
+      "source_views": [
+        {
+          "source_id": "src-academic-rag",
+          "position": "Retrieval connects generation to a non-parametric external memory."
+        },
+        {
+          "source_id": "src-production-rag",
+          "position": "Production quality depends on retriever behavior, indexing, latency, and monitoring."
+        },
+        {
+          "source_id": "src-evaluation-rag",
+          "position": "Evaluation should separate retrieval quality from answer faithfulness."
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "This portfolio trace uses a deterministic fixture corpus rather than live web results.",
+    "Lexical verification surfaces evidence matches but does not establish semantic entailment."
+  ],
+  "sources": [
+    {
+      "id": "src-academic-rag",
+      "provider": "openalex",
+      "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+      "url": "https://arxiv.org/abs/2005.11401",
+      "snippet": "Retrieval supplies task-relevant evidence from an external corpus, allowing a generator to work with non-parametric memory rather than storing all knowledge in model parameters.",
+      "kind": "academic",
+      "published_at": "2020",
+      "authors": [
+        "Patrick Lewis",
+        "Ethan Perez",
+        "Aleksandra Piktus"
+      ],
+      "credibility": "high",
+      "evidence_text": "Retrieval supplies task-relevant evidence from an external corpus, allowing a generator to work with non-parametric memory rather than storing all knowledge in model parameters.",
+      "start_index": 118,
+      "end_index": 296,
+      "metadata": {
+        "fixture": true,
+        "trace_role": "primary research"
+      }
+    },
+    {
+      "id": "src-survey-rag",
+      "provider": "fixture_survey",
+      "title": "A Practical Survey of Retrieval-Augmented Generation",
+      "url": "https://example.com/evidence-lab/rag-survey",
+      "snippet": "RAG can improve freshness and domain adaptation by connecting generation to external evidence, but it adds a dependency on corpus coverage and retriever behavior.",
+      "kind": "survey",
+      "published_at": "2024",
+      "authors": [
+        "Sourcebound Research Group"
+      ],
+      "credibility": "medium",
+      "evidence_text": "RAG can improve freshness and domain adaptation by connecting generation to external evidence, but it adds a dependency on corpus coverage and retriever behavior.",
+      "start_index": 302,
+      "end_index": 455,
+      "metadata": {
+        "fixture": true,
+        "trace_role": "synthesis perspective"
+      }
+    },
+    {
+      "id": "src-production-rag",
+      "provider": "fixture_engineering",
+      "title": "Production RAG: Retrieval Quality Is Part of Answer Quality",
+      "url": "https://example.com/evidence-lab/production-rag",
+      "snippet": "Production RAG introduces retrieval, ranking, indexing, latency, and monitoring concerns. Stale or irrelevant context can degrade an answer even when the language model is capable.",
+      "kind": "engineering",
+      "published_at": "2024",
+      "authors": [
+        "Sourcebound Engineering Notes"
+      ],
+      "credibility": "medium",
+      "evidence_text": "Production RAG introduces retrieval, ranking, indexing, latency, and monitoring concerns. Stale or irrelevant context can degrade an answer even when the language model is capable.",
+      "start_index": 461,
+      "end_index": 658,
+      "metadata": {
+        "fixture": true,
+        "trace_role": "production perspective"
+      }
+    },
+    {
+      "id": "src-evaluation-rag",
+      "provider": "fixture_evaluation",
+      "title": "Evaluating Grounded Generation with Retrieval",
+      "url": "https://example.com/evidence-lab/evaluation-rag",
+      "snippet": "Grounded-generation evaluation should inspect retrieval quality and answer faithfulness separately; end-to-end accuracy can hide missing or misleading context.",
+      "kind": "evaluation",
+      "published_at": "2025",
+      "authors": [
+        "Sourcebound Evaluation Notes"
+      ],
+      "credibility": "medium",
+      "evidence_text": "Grounded-generation evaluation should inspect retrieval quality and answer faithfulness separately; end-to-end accuracy can hide missing or misleading context.",
+      "start_index": 664,
+      "end_index": 833,
+      "metadata": {
+        "fixture": true,
+        "trace_role": "evaluation perspective"
+      }
+    }
+  ],
+  "provider_status": [
+    {
+      "provider_id": "openalex",
+      "ok": true,
+      "result_count": 4,
+      "error": null
+    },
+    {
+      "provider_id": "fixture_survey",
+      "ok": true,
+      "result_count": 4,
+      "error": null
+    },
+    {
+      "provider_id": "fixture_engineering",
+      "ok": true,
+      "result_count": 4,
+      "error": null
+    },
+    {
+      "provider_id": "fixture_evaluation",
+      "ok": true,
+      "result_count": 4,
+      "error": null
+    }
+  ],
+  "audit": {
+    "citation_coverage": 1.0,
+    "grounding_score": 1.0,
+    "source_diversity": 1.0,
+    "comparison_quality": 1.0,
+    "score": 0.94,
+    "cited_finding_count": 2,
+    "finding_count": 2,
+    "provider_count": 4,
+    "unresolved_citations": [],
+    "warnings": []
+  },
+  "verification": {
+    "claim_checks": [
+      {
+        "claim_id": "f1",
+        "statement": "Retrieval-augmented generation supplies external evidence at answer time, improving freshness without retraining the base model.",
+        "citation_ids": [
+          "src-academic-rag",
+          "src-survey-rag"
+        ],
+        "valid_citation_ids": [
+          "src-academic-rag",
+          "src-survey-rag"
+        ],
+        "invalid_citation_ids": [],
+        "verdict": "supported",
+        "matched_evidence": [
+          {
+            "citation_id": "src-academic-rag",
+            "source_title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+            "evidence_text": "Retrieval supplies task-relevant evidence from an external corpus, allowing a generator to work with non-parametric memory rather than storing all knowledge in model parameters.",
+            "matched_phrases": [
+              "external corpus",
+              "retrieval supplies task relevant evidence"
+            ],
+            "lexical_score": 0.78
+          },
+          {
+            "citation_id": "src-survey-rag",
+            "source_title": "A Practical Survey of Retrieval-Augmented Generation",
+            "evidence_text": "RAG can improve freshness and domain adaptation by connecting generation to external evidence, but it adds a dependency on corpus coverage and retriever behavior.",
+            "matched_phrases": [
+              "improve freshness",
+              "external evidence"
+            ],
+            "lexical_score": 0.7
+          }
+        ],
+        "coverage": 0.78,
+        "warnings": [],
+        "method": "deterministic_lexical"
+      },
+      {
+        "claim_id": "f2",
+        "statement": "The retrieval layer adds ranking, latency, and corpus-maintenance failure modes that must be evaluated separately from model quality.",
+        "citation_ids": [
+          "src-production-rag",
+          "src-evaluation-rag"
+        ],
+        "valid_citation_ids": [
+          "src-production-rag",
+          "src-evaluation-rag"
+        ],
+        "invalid_citation_ids": [],
+        "verdict": "supported",
+        "matched_evidence": [
+          {
+            "citation_id": "src-production-rag",
+            "source_title": "Production RAG: Retrieval Quality Is Part of Answer Quality",
+            "evidence_text": "Production RAG introduces retrieval, ranking, indexing, latency, and monitoring concerns. Stale or irrelevant context can degrade an answer even when the language model is capable.",
+            "matched_phrases": [
+              "retrieval ranking",
+              "latency",
+              "degrade an answer"
+            ],
+            "lexical_score": 0.84
+          },
+          {
+            "citation_id": "src-evaluation-rag",
+            "source_title": "Evaluating Grounded Generation with Retrieval",
+            "evidence_text": "Grounded-generation evaluation should inspect retrieval quality and answer faithfulness separately; end-to-end accuracy can hide missing or misleading context.",
+            "matched_phrases": [
+              "evaluation",
+              "retrieval quality",
+              "answer faithfulness"
+            ],
+            "lexical_score": 0.81
+          }
+        ],
+        "coverage": 0.84,
+        "warnings": [],
+        "method": "deterministic_lexical"
+      },
+      {
+        "claim_id": "comparison-1-consensus",
+        "statement": "The sources agree that retrieval can extend a model with external knowledge, while the added retrieval layer creates operational dependencies.",
+        "citation_ids": [
+          "src-academic-rag",
+          "src-production-rag",
+          "src-evaluation-rag"
+        ],
+        "valid_citation_ids": [
+          "src-academic-rag",
+          "src-production-rag",
+          "src-evaluation-rag"
+        ],
+        "invalid_citation_ids": [],
+        "verdict": "partial",
+        "matched_evidence": [
+          {
+            "citation_id": "src-academic-rag",
+            "source_title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+            "evidence_text": "Retrieval supplies task-relevant evidence from an external corpus, allowing a generator to work with non-parametric memory rather than storing all knowledge in model parameters.",
+            "matched_phrases": [
+              "retrieval",
+              "external"
+            ],
+            "lexical_score": 0.49
+          }
+        ],
+        "coverage": 0.49,
+        "warnings": [
+          "Only partial lexical overlap was found; semantic support is unverified."
+        ],
+        "method": "deterministic_lexical"
+      }
+    ],
+    "citation_coverage": 1.0,
+    "claim_coverage": 0.7,
+    "supported_claim_count": 2,
+    "partial_claim_count": 1,
+    "unsupported_claim_count": 0,
+    "contradicted_claim_count": 0,
+    "warnings": [
+      "Deterministic lexical verification is not semantic entailment; matched text requires review."
+    ],
+    "method": "deterministic_lexical"
+  },
+  "model": "offline-fixture-model",
+  "tool_calls": [
+    {
+      "name": "search_sources",
+      "query": "What are the trade-offs of retrieval-augmented generation?",
+      "source_count": 4,
+      "providers": [
+        "openalex",
+        "fixture_survey",
+        "fixture_engineering",
+        "fixture_evaluation"
+      ],
+      "planned_queries": [
+        "What are the trade-offs of retrieval-augmented generation?",
+        "What are the trade-offs of retrieval-augmented generation evidence findings studies",
+        "What are the trade-offs of retrieval-augmented generation benefits limitations risks trade-offs"
+      ],
+      "covered_intents": [
+        "overview",
+        "evidence",
+        "tradeoffs"
+      ],
+      "missing_intents": [
+        "comparison"
+      ],
+      "retrieval_coverage": 0.86,
+      "stop_reason": "coverage_met"
+    }
+  ],
+  "generated_at": "2026-01-15T09:00:00+00:00"
+}
