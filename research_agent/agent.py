@@ -164,6 +164,7 @@ class ResearchAgent:
         planner: RetrievalPlanner | None = None,
         planning_options: Mapping[str, Any] | None = None,
         use_planner: bool = True,
+        semantic_verifier: Any | None = None,
     ):
         # ``model=`` is accepted as a client alias for ergonomic fake models;
         # a string in that position is instead treated as the model name.
@@ -200,6 +201,7 @@ class ResearchAgent:
         self.search_tool = search_tool
         self.planner = (planner or RetrievalPlanner()) if use_planner else None
         self.planning_options = dict(planning_options or {})
+        self.semantic_verifier = semantic_verifier
         if settings is not None:
             self.planning_options.setdefault(
                 "max_query_count", getattr(settings, "max_query_count", 4)
@@ -222,6 +224,7 @@ class ResearchAgent:
         self.last_run_id: str | None = None
         self.last_audit = None
         self.last_verification = None
+        self.last_semantic_verification = None
         self.last_plan: ResearchPlan | None = None
         self.last_retrieval: RetrievalResult | None = None
         self._planned_executor: _PlannedSearchExecutor | None = None
@@ -236,6 +239,7 @@ class ResearchAgent:
         self.provider_statuses = {}
         self.tool_calls = []
         self.last_verification = None
+        self.last_semantic_verification = None
         self.last_run_id = str(uuid4())
         self.last_plan = None
         self.last_retrieval = None
@@ -291,6 +295,11 @@ class ResearchAgent:
             except ValueError as exc:
                 raise AgentError(str(exc)) from exc
             self.last_verification = verify_evidence(report, self.evidence)
+            if self.semantic_verifier is not None:
+                self.last_semantic_verification = self.semantic_verifier.verify(
+                    report,
+                    self.evidence,
+                )
             return report
 
         raise AgentError(f"research loop exceeded max_turns={self.max_turns}")
@@ -315,6 +324,7 @@ class ResearchAgent:
             provider_status=list(self.provider_statuses.values()),
             audit=audit,
             verification=verification,
+            semantic_verification=self.last_semantic_verification,
             model=self.model,
             tool_calls=self.tool_calls,
         )

@@ -295,7 +295,12 @@ class OpenAlexProvider:
     source_id: str = OPENALEX_SOURCE_ID
 
     def search(self, query: str, *, limit: int = 5) -> list[Source]:
-        params = urlencode({"search": str(query), "per-page": _limit(limit)})
+        # OpenAlex treats question marks and asterisks as wildcards in stemmed
+        # search and rejects them. Natural-language research questions often
+        # contain a trailing question mark, so remove wildcard punctuation at
+        # this provider boundary while preserving the semantic query text.
+        safe_query = " ".join(str(query).replace("?", " ").replace("*", " ").split())
+        params = urlencode({"search": safe_query, "per-page": _limit(limit)})
         data = _http_get_json(f"{self.endpoint}?{params}", self.timeout_seconds, {"User-Agent": "research-agent/1.0"})
         records = data.get("results", []) if isinstance(data, Mapping) else []
         results: list[Source] = []

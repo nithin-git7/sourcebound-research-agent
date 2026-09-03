@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any, Literal
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictFloat, StrictInt, StrictStr
 
 if TYPE_CHECKING:
+    from .semantic_verification import SemanticVerificationReport
     from .verification import EvidenceVerificationReport
 
 
@@ -146,6 +147,7 @@ class ResearchReport(StrictModel):
     # Added by the application after synthesis; the model only produces the
     # strict ResearchReportDraft contract above.
     verification: EvidenceVerificationReport | None = None
+    semantic_verification: SemanticVerificationReport | None = None
     model: StrictStr
     tool_calls: list[ToolCallTrace]
     generated_at: StrictStr
@@ -161,6 +163,7 @@ class ResearchReport(StrictModel):
         provider_status: list[ProviderStatus],
         audit: EvidenceAudit,
         verification: EvidenceVerificationReport | None = None,
+        semantic_verification: SemanticVerificationReport | None = None,
         model: str,
         tool_calls: list[ToolCallTrace],
     ) -> "ResearchReport":
@@ -175,6 +178,7 @@ class ResearchReport(StrictModel):
             provider_status=provider_status,
             audit=audit,
             verification=verification,
+            semantic_verification=semantic_verification,
             model=model,
             tool_calls=tool_calls,
             generated_at=datetime.now(timezone.utc).isoformat(),
@@ -333,7 +337,11 @@ def build_audit(draft: ResearchReportDraft, sources: list[Source]) -> EvidenceAu
 # is therefore resolved after this module has defined ResearchReport, avoiding a
 # runtime import cycle while keeping the final envelope fully typed.
 from .verification import EvidenceVerificationReport as _EvidenceVerificationReport
+from .semantic_verification import SemanticVerificationReport as _SemanticVerificationReport
 
 ResearchReport.model_rebuild(
-    _types_namespace={"EvidenceVerificationReport": _EvidenceVerificationReport}
+    _types_namespace={
+        "EvidenceVerificationReport": _EvidenceVerificationReport,
+        "SemanticVerificationReport": _SemanticVerificationReport,
+    }
 )

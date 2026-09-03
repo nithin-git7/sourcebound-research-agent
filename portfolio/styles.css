@@ -508,6 +508,67 @@ h2 em {
   background: #101411;
 }
 
+.research-console {
+  display: grid;
+  grid-template-columns: minmax(230px, 0.62fr) minmax(0, 1.38fr);
+  gap: 42px;
+  margin-top: 54px;
+  padding-block: 25px;
+  border-top: 1px solid var(--line-dark);
+  border-bottom: 1px solid var(--line-dark);
+}
+
+.console-copy label {
+  color: var(--paper);
+  font-size: 17px;
+  font-weight: 650;
+}
+
+.console-copy p,
+.console-status {
+  margin: 8px 0 0;
+  color: #8e988e;
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.console-input-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.console-input-row input {
+  min-width: 0;
+  padding: 13px 14px;
+  border: 1px solid #3d483e;
+  border-radius: 0;
+  background: #111612;
+  color: var(--paper);
+  font: 12px/1.5 var(--mono);
+}
+
+.console-input-row input:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 2px;
+}
+
+.console-input-row .button {
+  border: 1px solid var(--lime);
+}
+
+.console-input-row .button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+.console-status {
+  grid-column: 2;
+  margin-top: -30px;
+  transform: translateY(32px);
+}
+
 .trace-sidebar {
   display: flex;
   flex-direction: column;
@@ -1270,13 +1331,20 @@ h2 em {
 
   .method-grid,
   .trace-intro,
-  .release-top {
+  .release-top,
+  .research-console {
     grid-template-columns: 1fr;
     gap: 32px;
   }
 
   .trace-viewer {
     grid-template-columns: 190px minmax(0, 1fr);
+  }
+
+  .console-status {
+    grid-column: auto;
+    margin-top: 0;
+    transform: none;
   }
 
   .trace-stage {
@@ -1363,6 +1431,10 @@ h2 em {
   .trace-viewer {
     display: block;
     margin-top: 40px;
+  }
+
+  .console-input-row {
+    grid-template-columns: 1fr;
   }
 
   .trace-sidebar {

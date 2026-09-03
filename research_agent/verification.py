@@ -1,9 +1,9 @@
 """Provider-agnostic, deterministic claim-to-evidence verification.
 
-This module deliberately performs lexical checks only.  A lexical overlap is
+This module deliberately performs lexical checks only. A lexical overlap is
 useful for offline regression tests and for surfacing missing evidence, but it
-is not a semantic entailment judgment.  A future LLM judge can implement the
-``EvidenceVerifier`` protocol and return the same strict result contracts.
+is not a semantic entailment judgment. The optional evidence-only semantic
+verifier is exposed separately without weakening the deterministic default.
 """
 
 from __future__ import annotations

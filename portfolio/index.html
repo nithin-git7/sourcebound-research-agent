@@ -21,7 +21,7 @@
         <a href="#trace">Trace</a>
         <a href="#release">Release</a>
       </nav>
-      <div class="header-status"><span class="status-dot" aria-hidden="true"></span> deterministic demo</div>
+      <div class="header-status"><span class="status-dot" aria-hidden="true"></span> live public sources</div>
     </header>
 
     <main>
@@ -100,16 +100,28 @@
       <section class="trace-section" id="trace" aria-labelledby="trace-title">
         <div class="trace-intro shell">
           <div>
-            <p class="eyebrow">Interactive case study <span>/</span> deterministic sample</p>
+            <p class="eyebrow">Interactive case study <span>/</span> live retrieval</p>
             <h2 id="trace-title">Follow a question<br><em>through the evidence lab.</em></h2>
           </div>
           <p class="trace-intro-copy">
-            Move through the same checkpoints an evaluator would inspect. The
-            viewer is intentionally transparent: a partial result is visible,
-            a source can be opened, and lexical verification is labeled as a
-            review aid rather than semantic truth.
+            Search Wikipedia and OpenAlex from this page, then inspect every
+            source record. The public demo uses extractive findings only. Full
+            model synthesis and optional semantic verification run through the
+            Python API when configured with an OpenAI key.
           </p>
         </div>
+
+        <form class="research-console shell" id="research-form">
+          <div class="console-copy">
+            <label for="research-question">Research question</label>
+            <p>Runs a real, keyless search across two public providers. No generated claims are added in this browser mode.</p>
+          </div>
+          <div class="console-input-row">
+            <input id="research-question" name="question" type="text" minlength="8" maxlength="240" required value="What are the trade-offs of retrieval-augmented generation?">
+            <button class="button button-primary" id="research-submit" type="submit">Run public search <span aria-hidden="true">↘</span></button>
+          </div>
+          <div class="console-status" id="research-status" role="status" aria-live="polite">Ready to search Wikipedia and OpenAlex.</div>
+        </form>
 
         <div class="trace-viewer shell" id="trace-viewer" data-state="loading" aria-busy="true">
           <aside class="trace-sidebar">
@@ -139,7 +151,7 @@
             </nav>
             <div class="trace-sidebar-bottom">
               <span class="status-dot" aria-hidden="true"></span>
-              <span>offline fixture / safe to replay</span>
+              <span id="trace-mode">sample fixture / safe to replay</span>
             </div>
           </aside>
 
@@ -183,13 +195,13 @@
           </p>
         </div>
         <div class="release-grid">
-          <div class="release-stat"><strong>4</strong><span>provider perspectives</span></div>
-          <div class="release-stat"><strong>3</strong><span>planned retrieval intents</span></div>
-          <div class="release-stat"><strong>0.86</strong><span>retrieval coverage</span></div>
-          <div class="release-stat"><strong>1.0</strong><span>citation grounding</span></div>
+          <div class="release-stat"><strong>2</strong><span>live public providers</span></div>
+          <div class="release-stat"><strong>25+</strong><span>benchmark cases</span></div>
+          <div class="release-stat"><strong>5</strong><span>semantic verdicts</span></div>
+          <div class="release-stat"><strong>6</strong><span>inspectable trace stages</span></div>
         </div>
         <div class="release-footer">
-          <p><span class="status-dot" aria-hidden="true"></span> Ready for review / sample is deterministic</p>
+          <p><span class="status-dot" aria-hidden="true"></span> Ready for review / live retrieval plus reproducible fixture</p>
           <a class="button button-primary" href="#top">Back to top <span aria-hidden="true">↗</span></a>
         </div>
       </section>

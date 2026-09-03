@@ -17,6 +17,14 @@ from .sources import MultiSourceSearchTool, providers_from_settings
 
 def _build_live_agent(settings: Settings) -> ResearchAgent:
     model = OpenAIResponsesAdapter(api_key=settings.openai_api_key)
+    semantic_verifier = None
+    if settings.semantic_verification_enabled:
+        from .semantic_verification import SemanticEvidenceVerifier
+
+        semantic_verifier = SemanticEvidenceVerifier(
+            model,
+            model=settings.semantic_verification_model,
+        )
     providers = providers_from_settings(settings)
     if not providers:
         raise RuntimeError("No live source providers are enabled.")
@@ -36,6 +44,7 @@ def _build_live_agent(settings: Settings) -> ResearchAgent:
         max_attempts=max(1, settings.max_retries + 1),
         retry_initial_delay=settings.initial_retry_delay,
         settings=settings,
+        semantic_verifier=semantic_verifier,
     )
 
 

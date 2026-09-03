@@ -13,9 +13,10 @@ import json
 import os
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from .models import ResearchReport
+from .jobs import JobStatus, ResearchJobManager, ResearchRequest
 
 
 REPORT_PATH_ENV = "SOURCEBOUND_REPORT_PATH"
@@ -116,6 +117,8 @@ def create_app(
     *,
     report_path: str | Path | None = None,
     report: ResearchReport | Mapping[str, Any] | None = None,
+    research_runner: Callable[[ResearchRequest], ResearchReport] | None = None,
+    job_manager: ResearchJobManager | None = None,
 ) -> Any:
     """Create the optional FastAPI application.
 
@@ -140,6 +143,26 @@ def create_app(
 
     cached_report: ResearchReport | None = None
 
+    def default_runner(request: ResearchRequest) -> ResearchReport:
+        if request.mode == "sample":
+            if request.question.strip().casefold() != DEFAULT_QUESTION.casefold():
+                raise ValueError(
+                    "Sample mode only supports the bundled RAG demonstration question."
+                )
+            return _fallback_report()
+        from .config import Settings
+
+        settings = Settings.from_env()
+        if not settings.openai_api_key:
+            raise RuntimeError(
+                "Live research requires RESEARCH_AGENT_OPENAI_API_KEY or OPENAI_API_KEY."
+            )
+        from .cli import _build_live_agent
+
+        return _build_live_agent(settings).run(request.question)
+
+    manager = job_manager or ResearchJobManager(research_runner or default_runner)
+
     def get_report() -> dict[str, Any]:
         nonlocal cached_report
         if cached_report is None:
@@ -148,7 +171,7 @@ def create_app(
 
     app = FastAPI(
         title="Sourcebound Research Agent",
-        version="0.1.0",
+        version="0.2.0",
         description="A citation-grounded research trace for the Evidence Lab portfolio.",
     )
 
@@ -157,7 +180,7 @@ def create_app(
         return {
             "status": "ok",
             "service": "sourcebound-research-agent",
-            "version": "0.1.0",
+            "version": "0.2.0",
         }
 
     @app.get("/report")
@@ -167,6 +190,39 @@ def create_app(
     @app.get("/api/report", include_in_schema=False)
     def api_report_endpoint() -> dict[str, Any]:
         return get_report()
+
+    @app.post("/research", status_code=202)
+    def create_research_job(request: ResearchRequest) -> dict[str, Any]:
+        from fastapi import HTTPException
+
+        try:
+            job = manager.submit(request)
+        except RuntimeError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+        return job.model_dump(mode="json")
+
+    @app.get("/research/{job_id}")
+    def get_research_job(job_id: str) -> dict[str, Any]:
+        from fastapi import HTTPException
+
+        job = manager.get(job_id)
+        if job is None:
+            raise HTTPException(status_code=404, detail="research job not found")
+        return job.model_dump(mode="json")
+
+    @app.post("/research/{job_id}/cancel")
+    def cancel_research_job(job_id: str) -> dict[str, Any]:
+        from fastapi import HTTPException
+
+        job = manager.cancel(job_id)
+        if job is None:
+            raise HTTPException(status_code=404, detail="research job not found")
+        if job.status not in {JobStatus.QUEUED, JobStatus.CANCELLED}:
+            raise HTTPException(
+                status_code=409,
+                detail=f"job cannot be cancelled while {job.status.value}",
+            )
+        return job.model_dump(mode="json")
 
     return app
 

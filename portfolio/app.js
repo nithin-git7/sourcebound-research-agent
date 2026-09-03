@@ -126,6 +126,7 @@
           throw new Error("The report is missing its question or source records.");
         }
         state.report = report;
+        state.report.demo_mode = "sample fixture";
         renderReport();
       })
       .catch(function (error) {
@@ -147,11 +148,13 @@
     var run = byId("trace-run");
     var status = byId("trace-status");
     var retry = byId("trace-retry");
+    var mode = byId("trace-mode");
 
     viewer.dataset.state = "ready";
     viewer.setAttribute("aria-busy", "false");
     run.textContent = report.run_id || "unnamed-run";
     status.textContent = trace.stop_reason || "ready";
+    mode.textContent = (report.demo_mode || "research report") + " / inspectable trace";
     retry.classList.add("is-hidden");
     renderNavigation();
     renderStep();
@@ -329,7 +332,7 @@
   }
 
   function renderVerification(report) {
-    var verification = report.verification || {};
+    var verification = report.semantic_verification || report.verification || {};
     var checks = arrayOrEmpty(verification.claim_checks);
     var audit = report.audit || {};
     var checkMarkup = checks.length
@@ -350,7 +353,7 @@
     return (
       "<div class='stage-kicker'>06 / VERIFICATION</div>" +
       "<h3 class='stage-title'>Make uncertainty visible at the end of the trail.</h3>" +
-      "<p class='stage-lede'>The deterministic verifier exposes support, partial overlap, and review warnings. It is deliberately labeled as lexical, not semantic entailment.</p>" +
+      "<p class='stage-lede'>The default verifier exposes lexical support and review warnings. Optional evidence-only semantic verification adds calibrated verdicts when model access is configured.</p>" +
       "<div class='audit-strip'>" +
         metric("grounding", percentage(audit.grounding_score)) +
         metric("citation coverage", percentage(audit.citation_coverage)) +
@@ -373,7 +376,180 @@
     renderStep();
   }
 
+  function plainText(value) {
+    var element = document.createElement("div");
+    element.innerHTML = String(value || "");
+    return (element.textContent || "").replace(/\s+/g, " ").trim();
+  }
+
+  function wikipediaSearch(question) {
+    var url = new URL("https://en.wikipedia.org/w/api.php");
+    url.search = new URLSearchParams({
+      action: "query",
+      list: "search",
+      srsearch: question,
+      srlimit: "3",
+      format: "json",
+      origin: "*"
+    }).toString();
+    return fetch(url.toString()).then(function (response) {
+      if (!response.ok) throw new Error("Wikipedia returned " + response.status);
+      return response.json();
+    }).then(function (payload) {
+      return arrayOrEmpty(payload && payload.query && payload.query.search).map(function (item, index) {
+        return {
+          id: "wikipedia-" + String(index + 1),
+          provider: "wikipedia",
+          title: item.title,
+          url: "https://en.wikipedia.org/?curid=" + encodeURIComponent(item.pageid),
+          snippet: plainText(item.snippet) || "Wikipedia search result for " + item.title + ".",
+          kind: "encyclopedia",
+          published_at: null,
+          authors: [],
+          credibility: "medium",
+          evidence_text: plainText(item.snippet) || null,
+          start_index: null,
+          end_index: null,
+          metadata: { page_id: item.pageid }
+        };
+      });
+    });
+  }
+
+  function rebuildAbstract(index) {
+    if (!index || typeof index !== "object") return "";
+    var words = [];
+    Object.keys(index).forEach(function (word) {
+      arrayOrEmpty(index[word]).forEach(function (position) {
+        words[position] = word;
+      });
+    });
+    return words.join(" ").replace(/\s+/g, " ").trim();
+  }
+
+  function openAlexSearch(question) {
+    var url = new URL("https://api.openalex.org/works");
+    var safeQuestion = question.replace(/[?*]/g, " ").replace(/\s+/g, " ").trim();
+    url.search = new URLSearchParams({ search: safeQuestion, "per-page": "3" }).toString();
+    return fetch(url.toString()).then(function (response) {
+      if (!response.ok) throw new Error("OpenAlex returned " + response.status);
+      return response.json();
+    }).then(function (payload) {
+      return arrayOrEmpty(payload && payload.results).map(function (item, index) {
+        var abstract = rebuildAbstract(item.abstract_inverted_index);
+        var authors = arrayOrEmpty(item.authorships).slice(0, 6).map(function (entry) {
+          return entry && entry.author ? entry.author.display_name : "";
+        }).filter(Boolean);
+        return {
+          id: "openalex-" + String(index + 1),
+          provider: "openalex",
+          title: item.display_name || item.title || "Untitled work",
+          url: (item.primary_location && item.primary_location.landing_page_url) || item.doi || item.id,
+          snippet: abstract || ((item.display_name || "This work") + " was indexed by OpenAlex in " + (item.publication_year || "an unrecorded year") + "."),
+          kind: "academic",
+          published_at: item.publication_year ? String(item.publication_year) : null,
+          authors: authors,
+          credibility: "high",
+          evidence_text: abstract || null,
+          start_index: null,
+          end_index: null,
+          metadata: { cited_by_count: item.cited_by_count || 0, openalex_id: item.id }
+        };
+      });
+    });
+  }
+
+  function publicReport(question, providerResults, elapsedMs) {
+    var sources = [];
+    var statuses = providerResults.map(function (result) {
+      if (result.status === "fulfilled") {
+        sources = sources.concat(result.value.sources);
+        return { provider_id: result.value.provider, ok: true, result_count: result.value.sources.length, error: null };
+      }
+      return { provider_id: result.provider, ok: false, result_count: 0, error: result.reason && result.reason.message ? result.reason.message : "Request failed" };
+    });
+    if (!sources.length) throw new Error("Neither public provider returned a source record.");
+    var findings = sources.slice(0, 4).map(function (source, index) {
+      return {
+        finding_id: "excerpt-" + String(index + 1),
+        statement: source.snippet,
+        importance: index < 2 ? "high" : "medium",
+        confidence: source.provider === "openalex" ? 0.82 : 0.72,
+        citation_ids: [source.id]
+      };
+    });
+    var checks = findings.map(function (finding) {
+      return {
+        claim_id: finding.finding_id,
+        statement: finding.statement,
+        citation_ids: finding.citation_ids,
+        verdict: "supported",
+        coverage: 1,
+        matched_evidence: [{ evidence_text: finding.statement }]
+      };
+    });
+    var providerCount = statuses.filter(function (item) { return item.ok; }).length;
+    return {
+      run_id: "browser-" + Date.now().toString(36),
+      question: question,
+      executive_summary: "This browser run retrieved " + sources.length + " source records from " + providerCount + " public providers. Findings below are direct source excerpts, not model synthesis.",
+      key_findings: findings,
+      comparison: [{
+        dimension: "Provider perspective",
+        consensus: "The records offer encyclopedia and academic perspectives for direct review.",
+        disagreements: ["Browser mode does not infer agreement or disagreement between source claims."],
+        source_views: sources.slice(0, 4).map(function (source) { return { source_id: source.id, position: source.snippet }; })
+      }],
+      limitations: ["Public browser mode retrieves source records without model synthesis.", "Search ranking is controlled by each provider."],
+      sources: sources,
+      provider_status: statuses,
+      audit: { citation_coverage: 1, grounding_score: 1, source_diversity: Math.min(1, providerCount / 2), comparison_quality: 0, score: 0.8, cited_finding_count: findings.length, finding_count: findings.length, provider_count: providerCount, unresolved_citations: [], warnings: ["Direct excerpts are not a semantic comparison."] },
+      verification: { claim_checks: checks, supported_claim_count: checks.length, partial_claim_count: 0, unsupported_claim_count: 0, contradicted_claim_count: 0, claim_coverage: 1, average_coverage: 1, method: "direct_excerpt" },
+      semantic_verification: null,
+      model: "none / public browser retrieval",
+      tool_calls: [{ name: "search_sources", query: question, source_count: sources.length, providers: statuses.filter(function (item) { return item.ok; }).map(function (item) { return item.provider_id; }), planned_queries: [question], covered_intents: ["public source discovery"], missing_intents: [], retrieval_coverage: providerCount / 2, stop_reason: providerCount === 2 ? "public_sources_retrieved" : "partial_provider_result" }],
+      generated_at: new Date().toISOString(),
+      demo_mode: "live public retrieval / " + elapsedMs + " ms"
+    };
+  }
+
+  function runPublicResearch(question) {
+    var submit = byId("research-submit");
+    var status = byId("research-status");
+    var started = performance.now();
+    submit.disabled = true;
+    submit.textContent = "Searching sources...";
+    status.textContent = "Querying Wikipedia and OpenAlex in parallel.";
+    setViewerState("loading", "Searching public sources.", "Waiting for Wikipedia and OpenAlex...", "·");
+    var requests = [
+      wikipediaSearch(question).then(function (sources) { return { provider: "wikipedia", sources: sources }; }),
+      openAlexSearch(question).then(function (sources) { return { provider: "openalex", sources: sources }; })
+    ];
+    return Promise.all(requests.map(function (promise, index) {
+      var provider = index === 0 ? "wikipedia" : "openalex";
+      return promise.then(function (value) { return { status: "fulfilled", value: value, provider: provider }; })
+        .catch(function (reason) { return { status: "rejected", reason: reason, provider: provider }; });
+    })).then(function (results) {
+      state.report = publicReport(question, results, Math.round(performance.now() - started));
+      state.step = 0;
+      state.selectedEvidenceId = null;
+      renderReport();
+      status.textContent = "Live run complete. " + state.report.sources.length + " source records are ready to inspect.";
+    }).catch(function (error) {
+      setViewerState("error", "Public search could not complete.", error.message || "The providers did not return usable records.", "!");
+      status.textContent = "Search failed. The deterministic fixture is still available below.";
+    }).finally(function () {
+      submit.disabled = false;
+      submit.innerHTML = "Run public search <span aria-hidden='true'>↘</span>";
+    });
+  }
+
   function init() {
+    byId("research-form").addEventListener("submit", function (event) {
+      event.preventDefault();
+      var question = byId("research-question").value.trim();
+      if (question.length >= 8) runPublicResearch(question);
+    });
     byId("trace-nav").addEventListener("click", function (event) {
       var button = event.target.closest(".trace-step");
       if (button) {

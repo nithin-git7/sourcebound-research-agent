@@ -2,6 +2,7 @@
 
 from .agent import ResearchAgent
 from .config import Settings
+from .jobs import JobStatus, ResearchJob, ResearchJobManager, ResearchRequest
 from .models import ResearchReport, Source
 from .planning import (
     FreshnessHint,
@@ -18,6 +19,12 @@ from .security import (
     sanitize_search_output,
     validate_source_url,
 )
+from .semantic_verification import (
+    SemanticEvidenceVerifier,
+    SemanticVerdict,
+    SemanticVerificationReport,
+)
+from .telemetry import RunTelemetry
 from .verification import (
     DeterministicLexicalVerifier,
     EvidenceVerdict,
@@ -30,15 +37,23 @@ __all__ = [
     "EvidenceVerdict",
     "EvidenceVerificationReport",
     "FreshnessHint",
+    "JobStatus",
     "ResearchAgent",
+    "ResearchJob",
+    "ResearchJobManager",
     "ResearchPlan",
     "ResearchReport",
+    "ResearchRequest",
     "RetrievalPlanner",
     "RetrievalResult",
     "RetryPolicy",
     "SecurityBoundaryError",
+    "SemanticEvidenceVerifier",
+    "SemanticVerdict",
+    "SemanticVerificationReport",
     "Settings",
     "Source",
+    "RunTelemetry",
     "build_research_plan",
     "contains_prompt_injection",
     "get_retry_after_seconds",
@@ -48,3 +63,5 @@ __all__ = [
     "validate_source_url",
     "verify_evidence",
 ]
+
+__version__ = "0.2.0"

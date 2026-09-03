@@ -15,7 +15,9 @@ It is deliberately designed as an interview-ready system rather than a single pr
   and metadata instead of attaching the entire model response to every URL.
 - A grounding validator rejects citations that were not returned by the search tool.
 - A claim verifier matches cited claims to returned evidence and exposes support gaps.
+- An optional evidence-only semantic judge adds calibrated five-way verdicts without weakening the deterministic default.
 - An evaluation suite measures retrieval coverage, claim support, answer completeness, and report structure.
+- An in-memory job API exposes queued, running, succeeded, failed, and cancelled states with per-run telemetry.
 - A security boundary validates source URLs, bounds retrieved text, detects common prompt-injection patterns, and marks evidence as untrusted before it reaches the model.
 - A static portfolio viewer makes the question-to-verification trace inspectable, while an optional FastAPI adapter exposes the same validated report over HTTP.
 
@@ -45,8 +47,8 @@ If no key is present, the CLI automatically falls back to offline mode and tells
 ## Portfolio and local API
 
 The self-contained portfolio case study lives in `portfolio/` and can be served
-from any static host. Serve it over HTTP so the viewer can load its deterministic
-sample report:
+from any static host. It includes a real keyless browser run against Wikipedia
+and OpenAlex plus the deterministic sample trace:
 
 ~~~powershell
 python -m http.server 8765 --directory portfolio
@@ -60,7 +62,13 @@ python -m pip install -e ".[web]"
 uvicorn research_agent.api:create_app --factory --host 127.0.0.1 --port 8000
 ~~~
 
-It exposes `/health`, `/report`, and `/api/report`. Set
+It exposes `/health`, `/report`, `/api/report`, `POST /research`,
+`GET /research/{job_id}`, and `POST /research/{job_id}/cancel`. A research job
+uses live model synthesis when an OpenAI key is configured. The explicit
+`sample` mode is limited to the bundled demonstration question so an offline
+fixture cannot be mistaken for general research.
+
+Set
 `SOURCEBOUND_REPORT_PATH` to serve a specific JSON report; otherwise the sample
 fixture is used when the source tree is present, with an offline fallback after
 installation. The adapter is intentionally optional and the core package does
@@ -101,6 +109,9 @@ structured report draft
    |
    v
 ID grounding + claim evidence verification + Markdown/JSON renderer
+   |
+   +-- optional evidence-only semantic judge
+   +-- job state and telemetry snapshot
 ~~~
 
 The live path uses the OpenAI Responses API tools interface for the custom function and text.format with json_schema for the structured report contract. The hosted web-search adapter is optional; Wikipedia and OpenAlex provide independent public-source coverage without another API key.
@@ -123,8 +134,10 @@ The app owns source metadata and URLs. The model owns synthesis. This separation
 
 Claim verification is intentionally conservative and provider-agnostic. The default
 implementation uses lexical overlap and explicit polarity cues to surface matched
-passages; it is not semantic entailment. A future LLM judge can implement the same
-verifier protocol without changing the report contract.
+passages; it is not semantic entailment. Set
+`RESEARCH_AGENT_SEMANTIC_VERIFICATION_ENABLED=true` to add the optional
+evidence-only semantic judge. Its output is stored separately so reviewers can
+distinguish deterministic checks from model judgments.
 
 ## Evaluation
 
@@ -148,10 +161,11 @@ Run it with:
 python -m research_agent evaluate
 ~~~
 
-The suite is intentionally cheap and repeatable. Its metrics are deterministic
+The expanded suite covers technology, science, policy, health-information
+safety, and conflicting-source scenarios. It is intentionally cheap and
+repeatable. Its metrics are deterministic
 offline proxies, not live-web quality measurements or a substitute for human
-review. A next step for a deployed system would be to add a human-labeled set and
-run live-vs-fixture regression checks in CI.
+review. Regression thresholds make quality drift visible in CI.
 
 The repository workflow runs the unittest suite, Python compilation, and a
 wheel build on Python 3.11 and 3.12. Docker-image construction and live-provider
@@ -164,8 +178,9 @@ Built a citation-grounded research agent in Python using the OpenAI Responses AP
 
 Extended it with bounded query planning, explainable source reranking, explicit retrieval stop criteria, and source-specific hosted-search provenance with evidence offsets and metadata.
 
-The portfolio layer adds a replayable trace viewer, an optional HTTP report
-adapter, a security policy, a CI workflow, and a truthful container entrypoint.
+The portfolio layer adds live public-source retrieval, a replayable trace viewer,
+an asynchronous HTTP job contract, run telemetry, a security policy, a CI
+workflow, and a truthful container entrypoint.
 
 ## API references
 

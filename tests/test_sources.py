@@ -198,6 +198,17 @@ class SourceTests(unittest.TestCase):
 
         with patch(
             "research_agent.sources._http_get_json",
+            return_value={"results": []},
+        ) as request:
+            OpenAlexProvider().search("What works? And what fails*", limit=1)
+
+        requested_url = request.call_args.args[0]
+        self.assertIn("search=What+works+And+what+fails", requested_url)
+        self.assertNotIn("%3F", requested_url)
+        self.assertNotIn("%2A", requested_url)
+
+        with patch(
+            "research_agent.sources._http_get_json",
             return_value={
                 "query": {
                     "search": [

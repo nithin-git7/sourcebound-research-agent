@@ -78,6 +78,8 @@ class Settings:
     retrieval_budget: int = 20
     freshness_mode: str = "any"
     required_source_kinds: tuple[str, ...] = ()
+    semantic_verification_enabled: bool = False
+    semantic_verification_model: str = "gpt-5.4-mini"
     wikipedia_endpoint: str = "https://en.wikipedia.org/w/api.php"
     openalex_endpoint: str = "https://api.openalex.org/works"
 
@@ -154,6 +156,15 @@ class Settings:
                     or ""
                 ).split(",")
                 if kind.strip()
+            ),
+            semantic_verification_enabled=_env_bool(
+                env,
+                ("RESEARCH_AGENT_SEMANTIC_VERIFICATION_ENABLED",),
+                False,
+            ),
+            semantic_verification_model=(
+                _first_env(env, "RESEARCH_AGENT_SEMANTIC_VERIFICATION_MODEL")
+                or "gpt-5.4-mini"
             ),
             wikipedia_endpoint=(
                 _first_env(env, "RESEARCH_AGENT_WIKIPEDIA_ENDPOINT")
