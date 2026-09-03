@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import os
 from collections.abc import Mapping
+from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any, Callable
 
@@ -161,7 +162,16 @@ def create_app(
 
         return _build_live_agent(settings).run(request.question)
 
+    owns_manager = job_manager is None
     manager = job_manager or ResearchJobManager(research_runner or default_runner)
+
+    @asynccontextmanager
+    async def lifespan(_app: Any):
+        try:
+            yield
+        finally:
+            if owns_manager:
+                manager.close()
 
     def get_report() -> dict[str, Any]:
         nonlocal cached_report
@@ -173,6 +183,7 @@ def create_app(
         title="Sourcebound Research Agent",
         version="0.2.0",
         description="A citation-grounded research trace for the Evidence Lab portfolio.",
+        lifespan=lifespan,
     )
 
     @app.get("/health")

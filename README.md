@@ -172,6 +172,9 @@ wheel build on Python 3.11 and 3.12. Docker-image construction and live-provider
 execution remain release-time checks because they require external tooling or
 credentials.
 
+See [RELEASE_EVALUATION.md](RELEASE_EVALUATION.md) for the v0.2 readiness
+scorecard, verified gates, and remaining limitations.
+
 ## Resume-ready summary
 
 Built a citation-grounded research agent in Python using the OpenAI Responses API, custom function tools, strict JSON Schema structured outputs, parallel multi-source retrieval, exponential-backoff retries, deterministic claim-to-evidence verification, and a versioned benchmark harness for retrieval coverage, claim support, answer completeness, and cross-source comparison quality.

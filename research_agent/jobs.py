@@ -48,6 +48,7 @@ class ResearchJob(StrictModel):
     started_at: datetime | None = None
     completed_at: datetime | None = None
     report: ResearchReport | None = None
+    error_code: StrictStr | None = None
     error: StrictStr | None = None
     telemetry: dict[str, Any] = Field(default_factory=dict)
 
@@ -82,11 +83,7 @@ class ResearchJobManager:
     def submit(self, request: ResearchRequest) -> ResearchJob:
         with self._lock:
             self._prune_locked()
-            active = sum(
-                job.status in {JobStatus.QUEUED, JobStatus.RUNNING}
-                for job in self._jobs.values()
-            )
-            if active >= self._max_jobs:
+            if len(self._jobs) >= self._max_jobs:
                 raise RuntimeError("research job capacity is full")
             job_id = str(uuid4())
             job = ResearchJob(
@@ -150,7 +147,7 @@ class ResearchJobManager:
                 report = self._runner(request)
         except Exception as exc:
             telemetry.set_stop_reason("failed")
-            message = str(exc).strip() or type(exc).__name__
+            error_code, message = _public_error(exc)
             with self._lock:
                 current = self._jobs[job_id]
                 self._jobs[job_id] = current.model_copy(
@@ -158,7 +155,8 @@ class ResearchJobManager:
                         "status": JobStatus.FAILED,
                         "phase": "failed",
                         "completed_at": _now(),
-                        "error": message[:1_000],
+                        "error_code": error_code,
+                        "error": message,
                         "telemetry": telemetry.snapshot(),
                     }
                 )
@@ -196,6 +194,19 @@ class ResearchJobManager:
         for job_id in expired:
             self._jobs.pop(job_id, None)
             self._futures.pop(job_id, None)
+
+
+def _public_error(error: Exception) -> tuple[str, str]:
+    """Map internal failures to stable details safe for an HTTP response."""
+
+    message = str(error).strip()
+    if isinstance(error, ValueError) and message:
+        return "invalid_request", message[:200]
+    if "OPENAI_API_KEY" in message:
+        return "configuration_error", (
+            "Live research is not configured on this deployment."
+        )
+    return "research_failed", "The research job failed before a report was produced."
 
 
 __all__ = [

@@ -50,7 +50,12 @@ class ResearchJobManagerTests(unittest.TestCase):
                     break
                 time.sleep(0.01)
             self.assertEqual(current.status, JobStatus.FAILED)
-            self.assertEqual(current.error, "provider unavailable")
+            self.assertEqual(current.error_code, "research_failed")
+            self.assertEqual(
+                current.error,
+                "The research job failed before a report was produced.",
+            )
+            self.assertNotIn("provider unavailable", current.error)
             self.assertIsNone(current.report)
         finally:
             manager.close()
